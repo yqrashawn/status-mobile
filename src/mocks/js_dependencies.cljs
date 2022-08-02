@@ -18,10 +18,10 @@
 (def svg                    #js {})
 
 (def react-native
-  (clj->js {:NativeModules {:RNGestureHandlerModule {:Direction (fn [])}
-                            :PushNotifications      {}
-                            :Status                 utils.test/status
-                            :ReanimatedModule       {:configureProps (fn [])}}
+  (clj->js {:NativeModules {:RNGestureHandlerModule  {:Direction (fn [])}
+                            :PushNotifications       {}
+                            :Status                  utils.test/status
+                            :ReanimatedModule        {:configureProps (fn [])}}
 
             :View                     {}
             :RefreshControl           {}

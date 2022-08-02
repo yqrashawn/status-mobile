@@ -26,7 +26,7 @@
                 [cljfmt/cljfmt "0.6.7"]]
 
  ;; port and middleware for repl in development
- :nrepl {:port 7888
+ :nrepl {:port       7888
          :middleware [cider.piggieback/wrap-cljs-repl
                       refactor-nrepl.middleware/wrap-refactor]}
 
@@ -37,59 +37,63 @@
  :cache-blockers #{status-im.utils.js-resources status-im.ui.components.icons.icons}
 
  :builds {:mobile
-          {:target :react-native
+          {:target     :react-native
            :output-dir "app"
-           :init-fn status-im.core/init
-           :dev {:devtools {:after-load status-im.reloader/reload
-                            :build-notify status-im.reloader/build-notify
-                            :preloads [re-frisk-remote.preload]}
-                 :closure-defines {status-im.utils.config/INFURA_TOKEN #shadow/env "INFURA_TOKEN"}
-                 :compiler-options {:output-feature-set :es5
-                                    :closure-defines
-                                    {re-frame.trace/trace-enabled? true}
-                                    :source-map false
-                                    :infer-externs true}
-                 ;; if you want to use a real device, set your local ip
-                 ;; in the SHADOW_HOST env variable to make sure that
-                 ;; it will use the right interface
-                 :local-ip #shadow/env "SHADOW_HOST"}
-           :chunks {:fleets status-im.fleet.default-fleet/default-fleets
-                    :chats status-im.chat.default-chats/default-chats}
-           :release {:closure-defines {status-im.utils.config/INFURA_TOKEN #shadow/env "INFURA_TOKEN"}
-                     :compiler-options {:output-feature-set :es6
-                                        ;;disable for android build as there
-                                        ;;is an intermittent warning with deftype
-                                        :warnings-as-errors false
-                                        :infer-externs :auto
-                                        :static-fns true
-                                        :fn-invoke-direct true
-                                        :optimizations :advanced
-                                        :js-options {:js-provider :closure}}}}
+           :init-fn    status-im.core/init
+           :dev        {:devtools         {:after-load   status-im.reloader/reload
+                                           :build-notify status-im.reloader/build-notify
+                                           :preloads     [re-frisk-remote.preload]}
+                        :closure-defines  {status-im.utils.config/INFURA_TOKEN #shadow/env "INFURA_TOKEN"}
+                        :compiler-options {:output-feature-set :es5
+                                           :closure-defines
+                                           {re-frame.trace/trace-enabled? true}
+                                           :source-map         false
+                                           :infer-externs      true}
+                        ;; if you want to use a real device, set your local ip
+                        ;; in the SHADOW_HOST env variable to make sure that
+                        ;; it will use the right interface
+                        :local-ip         #shadow/env "SHADOW_HOST"}
+           :chunks     {:fleets status-im.fleet.default-fleet/default-fleets
+                        :chats  status-im.chat.default-chats/default-chats}
+           :release    {:closure-defines  {status-im.utils.config/INFURA_TOKEN #shadow/env "INFURA_TOKEN"}
+                        :compiler-options {:output-feature-set :es6
+                                           ;;disable for android build as there
+                                           ;;is an intermittent warning with deftype
+                                           :warnings-as-errors false
+                                           :infer-externs      :auto
+                                           :static-fns         true
+                                           :fn-invoke-direct   true
+                                           :optimizations      :advanced
+                                           :js-options         {:js-provider :closure}}}}
+
           ;; the tests are ran with node, react-native dependencies are mocked
           ;; by using node --require override.js, which uses the node-library
           ;; produced by the target :mocks below and redefines node require
           ;; function to use the mocks instead of the rn libraries
           :test
-          {:output-to     "target/test/test.js"
-           :output-dir    "target/test"
-           :optimizations :simple
-           :target        :node-test
-           :closure-defines {status-im.utils.config/INFURA_TOKEN #shadow/env "INFURA_TOKEN"}
+          {:output-to        "target/test/test.js"
+           :output-dir       "target/test"
+           :optimizations    :simple
+           :target           :node-test
+           :main             status-im.test-runner/main
+           :ui-driven        true
+           ;; :build-hooks      [(status-im.shadow-cljs-test-hook/configure)]
+           :closure-defines  {status-im.utils.config/INFURA_TOKEN #shadow/env "INFURA_TOKEN"}
            :compiler-options {;; needed because we override require and it
                               ;; messes with source-map which reports callstack
                               ;; exceeded exceptions instead of real issues
-                              :source-map false
+                              :source-map    false
                               ;; needed because we use deref in tests
-                              :static-fns false
+                              :static-fns    false
                               :optimizations :simple}}
 
           ;; mock.js-dependencies is mocking the react-native libraries
           ;; we build it as a node library so that it can be required by
           ;; override.js
           :mocks
-          {:target :node-library
-           :exports {:mocks mocks.js-dependencies/mock}
-           :output-to "target/mocks/mocks.js"
-           :output-dir "target/mocks"
+          {:target           :node-library
+           :exports          {:mocks mocks.js-dependencies/mock}
+           :output-to        "target/mocks/mocks.js"
+           :output-dir       "target/mocks"
            :compiler-options {:optimizations :simple
-                              :source-map false}}}}
+                              :source-map    false}}}}
